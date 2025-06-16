@@ -1,4 +1,4 @@
-import Application from "../models/Application.js";
+import Job from "../models/Job";
 import mongoose from "mongoose";
 import { Request, Response } from 'express';
 
@@ -17,7 +17,7 @@ interface ParsedQueryResults {
 }
 
 interface ApplicationQuery {
-  userId: string;
+  userId: string | mongoose.Types.ObjectId;
   status?: { $ne: string };
   company?: { $regex: RegExp };
 }
@@ -35,7 +35,9 @@ function parseApplicationQueryParams(queryParams: ApplicationQueryParams, userId
   const search = queryParams.searchByCompany;
   const sortOption = sortMap[sort] || { date: -1 };
 
-  const query: ApplicationQuery = { userId };
+  const userObjectId = new mongoose.Types.ObjectId(userId);
+
+  const query: ApplicationQuery = { userId: userObjectId };
 
   if (filter === "excludeRejected") {
     query.status = { $ne: "Rejected" };
@@ -44,8 +46,9 @@ function parseApplicationQueryParams(queryParams: ApplicationQueryParams, userId
   if (search) {
     query.company = { $regex: new RegExp(search, "i") };
   }
-
+  console.log("Query from parse application", query);
   return { query, sortOption, sort, filter, search };
+  
 }
 
 // Get and display all of the user's applications.
@@ -53,6 +56,8 @@ export const getAllApplications = async (req: Request, res: Response) => {
   // Get the current session ID - userID.
   // @ts-ignore
   const loggedInUserID = req.session.user_id;
+  console.log("UserId:", loggedInUserID);
+  
   // If session ID isnt found, redirect to login.
   if (!loggedInUserID) {
     return res.redirect("/auth/login");
@@ -62,15 +67,17 @@ export const getAllApplications = async (req: Request, res: Response) => {
     req.query,
     loggedInUserID,
   );
+  
 
-  const userApplications = await Application.find(query).sort(sortOption);
-  res.render("myApplications", { userApplications, sort, filter, search });
+  const applications = await Job.find(query).sort(sortOption);
+  console.log("Applications found:", applications.length);
+  res.render("my-applications", { applications, sort, filter, search });
 };
 
 // Display the new Application Page.
 export const newApplicationPage = (req: Request, res: Response) => {
   const date = new Date();
-  res.render("addApplication", {date});
+  res.render("add-application", {date});
 };
 
 // Add a new application.
@@ -103,10 +110,10 @@ export const addNewApplication = async (req: Request, res: Response) => {
     userId: loggedInUserIDObject,
   };
 
-  const newApplication = new Application(newApplicationData);
+  const newApplication = new Job(newApplicationData);
   await newApplication.save();
 
-  res.redirect("/applications/myApplications");
+  res.redirect("/applications/my-applications");
 };
 
 // Display edit application page.
@@ -116,18 +123,18 @@ export const editApplicationPage = async (req: Request, res: Response) => {
   const userId = req.session.user_id;
 
   try {
-    const application = await Application.findById(applicationId);
+    const application = await Job.findById(applicationId);
     if (!application) {
-      return res.redirect("/applications/myApplications");
+      return res.redirect("/applications/my-applications");
     }
 
     if (!application.userId.equals(userId)) {
-      return res.redirect("/applications/myApplications");
+      return res.redirect("/applications/my-applications");
     }
 
-    res.render("editApplication", { application });
+    res.render("edit-application", { application });
   } catch (err) {
-    return res.redirect("/applications/myApplications");
+    return res.redirect("/applications/my-applications");
   }
 };
 
@@ -135,7 +142,7 @@ export const editApplicationPage = async (req: Request, res: Response) => {
  * Handles editing a application by ID.
  * 
  * Check if the application exists and belongs to the logged-in user, then updates it with the request body.
- * Redirect to "/applications/myApplications" in all cases.
+ * Redirect to "/applications/my-applications" in all cases.
  * @param req 
  * @param res 
  */
@@ -148,18 +155,18 @@ export const editApplication = async (req: Request, res: Response) => {
   try {
     const application = await Application.findById(applicationId);
     if (!application) {
-      res.redirect("/applications/myApplications");
+      res.redirect("/applications/my-applications");
     }
     console.log("Application from DB:", application);
     if (!application.userId.equals(userId)) {
-      res.redirect("/applications/myApplications");
+      res.redirect("/applications/my-applications");
     }
     await Application.findByIdAndUpdate(applicationId, req.body, { runValidators: true });
 
-    res.redirect("/applications/myApplications");
+    res.redirect("/applications/my-applications");
   } catch (err) {
     console.error(err);
-    res.redirect("/applications/myApplications");
+    res.redirect("/applications/my-applications");
   }
 };
 
@@ -168,5 +175,5 @@ export const deleteApplication = async (req: Request, res: Response) => {
   // Get the id for the application and delete it.
   const { _id } = req.params;
   await Application.findByIdAndDelete(_id);
-  res.redirect("/applications/myApplications");
+  res.redirect("/applications/my-applications");
 };

@@ -1,4 +1,4 @@
-#editJobsTable {
+#editApplicationsTable {
   border-collapse: collapse;
   width: auto;
   max-width: 1200px;
@@ -9,14 +9,14 @@
   margin-right: auto;
 }
 
-#editJobsTable td,
-#editJobsTable th {
+#editApplicationsTable td,
+#editApplicationsTable th {
   border: 1px solid black;
   padding: 10px;
   font-family: "Open Sans", sans-serif;
 }
 
-#editJobsTable thead th {
+#editApplicationsTable thead th {
   text-align: left;
   white-space: nowrap;
 }

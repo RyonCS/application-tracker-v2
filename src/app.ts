@@ -1,16 +1,16 @@
 import mongoose from "mongoose";
-import { fileURLToPath } from "url";
 import dotenv from "dotenv";
 import path from "path";
 import methodOverride from "method-override";
-import applicationsRoutes from "./routes/applications-routes.js";
-import authRoutes from "./routes/auth-routes.js";
+import applicationsRoutes from "./routes/applications-routes";
+import authRoutes from "./routes/auth-routes";
 import session from "express-session";
 import passport from "passport";
 import localStrategy from "passport-local";
-import User from "./models/User.js";
+import User from "./models/User.ts";
 import MongoStore from "connect-mongo";
 import express, { Request, Response } from 'express';
+import { fileURLToPath } from "url";
 import fs from "fs";
 dotenv.config();
 
@@ -24,10 +24,6 @@ mongoose
 // Starting up express app.
 const app = express();
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-// On Render, the views directory is in the root of the project (not inside src).
 const viewsPath = path.join(__dirname, "views");
 
 // Set up the views directory
@@ -38,7 +34,9 @@ app.set("view engine", "ejs");
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(methodOverride("_method"));
-app.use(express.static("public"));
+app.use(express.static(path.join(__dirname, '..', 'public')));
+
+app.use(express.static(path.join(__dirname, "..", "public")));
 
 // Express-session configuration.
 const sessionSecret = process.env.SESSION_SECRET;

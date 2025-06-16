@@ -9,24 +9,24 @@ import {
   editApplicationPage,
   editApplication,
   deleteApplication,
-} from "../controllers/applications-controller.js";
+} from "../controllers/applications-controller";
 
 // Simple Get Route to render the homepage.
-router.get("/myApplications", getAllApplications);
+router.get("/my-applications", getAllApplications);
 
 // Route to new application page.
 router.get("/new", newApplicationPage);
 
 // Route to edit application page.
-router.get("/myApplications/:_id/edit", editApplicationPage);
+router.get("/my-applications/:_id/edit", editApplicationPage);
 
 // Route to add a new application.
-router.post("/myApplications", addNewApplication);
+router.post("/my-applications", addNewApplication);
 
 // Route to edit a specific application.
-router.put("/myApplications/:_id", editApplication);
+router.put("/my-applications/:_id", editApplication);
 
 // Route to delete a specific application.
-router.delete("/myApplications/:_id", deleteApplication);
+router.delete("/my-applications/:_id", deleteApplication);
 
 export default router;

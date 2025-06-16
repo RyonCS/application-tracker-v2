@@ -5,16 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/styles/editandAddApplication.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
-    <title>Add a new application!</title>
+    <title>Edit a Application!</title>
 </head>
 <body>
-          <!-- Header -->
+      <!-- Header -->
   <header class="p-3 text-bg-dark">
     <div class="container-fluid">
         <div class="d-flex align-items-center justify-content-between">
 
             <!-- Back to My Applications -->
-            <a href="/applications/myApplications" class="btn btn-outline-light me-3">Back to My Applications</a>
+            <a href="/applications/my-applications" class="btn btn-outline-light me-3">Back to My Applications</a>
 
             <!-- Title centered -->
             <h3 class="text-white m-0 mx-auto">Application Application Tracker</h3>
@@ -27,8 +27,8 @@
     </div>
 </header>
 
-    <form action="/applications/myApplications" method="POST">
-        <table id="editApplicationsTable">
+  <form action="/applications/my-applications/<%=application._id%>?_method=PUT" method="POST" style="margin-top: 80px;">
+    <table id="editApplicationsTable">
         <!-- Semantically incorrect for not having headers in <thead> but quickest workaround to make button take up two rows.-->
         <tbody>
             <tr>
@@ -53,47 +53,47 @@
                 <th>
                     Link to Application
                 </th>
-                <td rowspan="2">
+                <th rowspan="2">
                     <button>Submit</button>
-                </td>
+                </th>
             </tr>
             <tr>
                 <td>
-                    <% const formattedDate = date ? date.toISOString().split('T')[0] : '' %>
+                    <% const formattedDate = application.date ? application.date.toISOString().split('T')[0] : '' %>
                     <input type="date" name="date" placeholder="<%=formattedDate %>" value="<%=formattedDate %>" style="padding: 3px;">
                 </td>
                 <td>
-                     <input type="text" name="company" placeholder="Company">
+                     <input type="text" name="company" placeholder="<%=application.company %>" value="<%=application.company %>" style="padding: 3px;">
                 </td>
                 <td>
-                    <input type="text" name="position" placeholder="Position">
+                    <input type="text" name="position" placeholder="<%=application.position %>" value="<%=application.position %>" style="padding: 3px;">
                 </td>
                 <td>
-                     <input type="text" name="location" placeholder="Location">
+                     <input type="text" name="location" placeholder="<%=application.location %>" value="<%=application.location %>" style="padding: 3px;">
                 </td>
                 <td>
-                     <select name="workMode">
-                        <option value="In-Person">In-Person</option>
-                        <option value="Remote">Remote</option>
-                        <option value="Hybrid">Hybrid</option>
+                     <select name="workMode" style="padding: 6px 8px 6px 6px;">
+                        <option value="In-Person" <%=application.workMode === 'In-Person' ? 'selected' : "" %>>In-Person</option>
+                        <option value="Remote" <%=application.workMode === 'Remote' ? 'selected' : "" %>>Remote</option>
+                        <option value="Hybrid" <%=application.workMode === 'Hybrid' ? 'selected' : "" %>>Hybrid</option>
+
                     </select>
                 </td>
                 <td>
-                     <select name="status">
-                        <option value="Applied">Applied</option>
-                        <option value="Interview">Interview</option>
-                        <option value="Offer">Offer</option>
-                        <option value="Rejected">Rejected</option>
+                     <select name="status" style="padding: 6px 8px 6px 6px;">
+                        <option value="Applied" <%=application.status === 'Applied' ? 'selected' : "" %>>Applied</option>
+                        <option value="Interview" <%=application.status === 'Interview' ? 'selected' : "" %>>Interview</option>
+                        <option value="Offer" <%=application.status === 'Offer' ? 'selected' : "" %>>Offer</option>
+                        <option value="Rejected" <%=application.status === 'Rejected' ? 'selected' : "" %>>Rejected</option>
                     </select>
                 </td>
                 <td>
-                    <input type="text" name="linkToPosting" placeholder="Link">
+                    <input type="text" name="linkToPosting" id="linkToPosting" placeholder="Insert link..." value="<%=application.linkToPosting %>" style="padding: 3px;">
                 </td>
             </tr>
         </tbody>
     </table>
-
-    </form>
+  </form>
 
     <!-- 100% privacy-first analytics -->
     <script async src="https://scripts.simpleanalyticscdn.com/latest.js"></script>

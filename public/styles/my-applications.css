@@ -2,7 +2,7 @@
   padding-bottom: 5px;
 }
 
-#filterJobs {
+#filterApplications {
   border-collapse: collapse;
   width: auto;
   max-width: 1200px;
@@ -15,28 +15,33 @@
   margin-bottom: 40px;
 }
 
-#mainJobsTable {
+#mainApplicationsTable {
   border-collapse: collapse;
   width: auto;
   max-width: 1200px;
   margin-top: 40px;
-  border: 1px solid black;
+  border: 2px solid black;
   text-align: left;
   margin-left: auto;
   margin-right: auto;
   margin-bottom: 40px;
 }
 
-#mainJobsTable td,
-#mainJobsTable th {
+#mainApplicationsTable td,
+#mainApplicationsTable th {
   border: 1px solid black;
-  padding: 10px;
+  border-bottom: 2px solid black;
+  padding: 11px;
   font-family: "Open Sans", sans-serif;
+  font-weight: 400;
+  font-size: 10pt;
 }
 
-#mainJobsTable thead th {
+#mainApplicationsTable thead th {
   text-align: left;
   white-space: nowrap;
+  font-size: 11pt;
+  font-weight: 500;
 }
 
 .rejected-status {

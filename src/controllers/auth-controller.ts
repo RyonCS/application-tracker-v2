@@ -1,4 +1,4 @@
-import User from "../models/User.js";
+import User from "../models/User.ts";
 import passport from "passport";
 import dotenv from "dotenv";
 import { Request, Response } from 'express';
@@ -29,7 +29,7 @@ export const login = async (req: Request, res: Response) => {
         }
         // @ts-ignore
         req.session.user_id = authenticatedUser._id; // Save user ID in session.
-        return res.redirect("/applications/myApplications"); // Redirect to the user's application page.
+        return res.redirect("/applications/my-applications"); // Redirect to the user's application page.
       });
     })(req, res); // Trigger passport authentication.
   } catch (err) {
@@ -54,7 +54,7 @@ export const register = async (req: Request, res: Response) => {
     // @ts-ignore
     req.session.user_id = newUser._id;
 
-    return res.redirect("/applications/myApplications");
+    return res.redirect("/applications/my-applications");
   } catch (err) {
     return res.redirect("/auth/login");
   }
