@@ -1,0 +1,98 @@
+.filterAndSortOptions {
+  padding-bottom: 5px;
+}
+
+#filterJobs {
+  border-collapse: collapse;
+  width: auto;
+  max-width: 1200px;
+  min-width: 1200px;
+  margin-top: 40px;
+  border: 1px solid black;
+  text-align: left;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 40px;
+}
+
+#mainJobsTable {
+  border-collapse: collapse;
+  width: auto;
+  max-width: 1200px;
+  margin-top: 40px;
+  border: 1px solid black;
+  text-align: left;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 40px;
+}
+
+#mainJobsTable td,
+#mainJobsTable th {
+  border: 1px solid black;
+  padding: 10px;
+  font-family: "Open Sans", sans-serif;
+}
+
+#mainJobsTable thead th {
+  text-align: left;
+  white-space: nowrap;
+}
+
+.rejected-status {
+  color: red;
+  font-weight: bold;
+}
+
+.button-link {
+  display: inline-block;
+  padding: 10px 20px;
+  background-color: #0056b3;
+  color: white;
+  text-decoration: none;
+  border-radius: 5px;
+  font-weight: bold;
+  border: none;
+  transition: background-color 0.2s;
+  font-family: "Open Sans", sans-serif;
+}
+
+.button-link:hover {
+  background-color: #007bff;
+}
+
+#actionsColumn {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  width: 100%;
+}
+
+#actionsColumn button {
+  flex: 1;
+  max-width: 200px;
+  border: 1px solid black;
+  border-radius: 10%;
+}
+
+#deleteButton {
+  background-color: #a62c2c;
+  color: whitesmoke;
+  transition: background-color 0.2s;
+}
+
+#deleteButton:hover {
+  background-color: #e83f25;
+  color: whitesmoke;
+}
+
+#editButton {
+  background-color: #5a636a;
+  color: whitesmoke;
+  transition: background-color 0.2s;
+}
+
+#editButton:hover {
+  background-color: #6c757d;
+  color: whitesmoke;
+}
