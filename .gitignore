@@ -1,4 +1,23 @@
-.env
+# Node modules
 node_modules/
+
+# Environment variables and secrets
+.env
 SetUp/CreateSecretKey.js
-/dist
+
+# Build output
+dist/
+
+# Prisma local files
+*.db
+*.sqlite
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+
+# IDE and OS junk
+.DS_Store
+.vscode/
+.idea/
