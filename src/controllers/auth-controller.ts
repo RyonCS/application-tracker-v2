@@ -1,4 +1,3 @@
-import User from "../models/User.ts";
 import passport from "passport";
 import dotenv from "dotenv";
 import { Request, Response } from 'express';

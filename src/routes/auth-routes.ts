@@ -1,5 +1,4 @@
 import express from "express";
-import passport from "passport";
 const router = express.Router();
 import {
   login,
@@ -7,7 +6,7 @@ import {
   getLoginPage,
   getRegisterPage,
   logOut,
-} from "../controllers/auth-controller.ts";
+} from "../controllers/auth-controller";
 
 // Route to login page.
 router.get("/login", getLoginPage);

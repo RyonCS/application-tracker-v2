@@ -9,10 +9,12 @@ datasource db {
 }
 
 model User {
-    id           Int       @id @default(autoincrement())
+    id           String    @id @default(uuid())
     createdAt    DateTime  @default(now())
     email        String    @unique
-    password     String    
+    passwordHash String
+    hash         String  
+    salt         String  
     role         Role      @default(APPLICANT)
     lastLoginAt  DateTime  @default(now())
 
@@ -20,15 +22,15 @@ model User {
 }
 
 model Application {
-    id                  Int       @id @default(autoincrement())
+    id                  String    @id @default(uuid())
     applicationDate     DateTime  @default(now())
     company             String?
     position            String?
     location            String?
     status              Status
-    workMode            WorkMode
+    workMode            WorkMode?  
     linkToJobPosting    String?
-    userId              Int
+    userId              String
     user                User      @relation(fields: [userId], references: [id])
     createdAt           DateTime  @default(now())
     updatedAt           DateTime  @updatedAt

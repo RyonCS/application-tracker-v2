@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+
 import dotenv from "dotenv";
 import path from "path";
 import methodOverride from "method-override";
@@ -6,23 +6,17 @@ import applicationsRoutes from "./routes/applications-routes";
 import authRoutes from "./routes/auth-routes";
 import session from "express-session";
 import passport from "passport";
-import localStrategy from "passport-local";
-import User from "./models/User.ts";
-import MongoStore from "connect-mongo";
 import express, { Request, Response } from 'express';
-import { fileURLToPath } from "url";
-import fs from "fs";
+import pg from "pg";
+import pgSession from "connect-pg-simple";
+import { PrismaClient } from '@prisma/client';
+import { initializePassport } from './middleware/passport-config';
 dotenv.config();
-
-// Connecting to MongoDB.
-const dbURI: string = process.env.MONGO_URI ?? '';
-mongoose
-  .connect(dbURI)
-  .then(() => console.log("Connected to MongoDB"))
-  .catch((err) => console.log("Error: ", err));
 
 // Starting up express app.
 const app = express();
+const prisma = new PrismaClient();
+const PgSession = pgSession(session);
 
 const viewsPath = path.join(__dirname, "views");
 
@@ -38,20 +32,30 @@ app.use(express.static(path.join(__dirname, '..', 'public')));
 
 app.use(express.static(path.join(__dirname, "..", "public")));
 
+const pgPool = new pg.Pool({
+  connectionString: process.env.DATABASE_URL,
+});
+
 // Express-session configuration.
 const sessionSecret = process.env.SESSION_SECRET;
+if (!sessionSecret) {
+  throw new Error("SESSION_SECRET is not defined in the environment variables");
+}
+
+const isProduction = process.env.NODE_ENV === 'production';
+
 const sessionConfig = {
   secret: sessionSecret,
   resave: false,
-  saveUninitialized: true,
-  store: MongoStore.create({
-    mongoUrl: dbURI,
-    collectionName: "sessions",
+  saveUninitialized: false,
+  store: new PgSession({
+    pool: pgPool,
+    tableName: "session",
   }),
   cookie: {
     httpOnly: true,
-    expires: Date.now() + 1000 * 60 * 60 * 24 * 7,
-    maxAge: 1000 * 60 * 60 * 24 * 7,
+    secure: isProduction,
+    maxAge: 1000 * 60 * 60 * 24 * 7, // 1 week
   },
 };
 
@@ -59,9 +63,8 @@ const sessionConfig = {
 app.use(session(sessionConfig));
 app.use(passport.initialize());
 app.use(passport.session());
-passport.use(new localStrategy(User.authenticate()));
-passport.serializeUser(User.serializeUser());
-passport.deserializeUser(User.deserializeUser());
+
+initializePassport();
 
 // Routes
 app.use("/applications", applicationsRoutes);

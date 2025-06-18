@@ -9,10 +9,11 @@ CREATE TYPE "WorkMode" AS ENUM ('INPERSON', 'REMOTE', 'HYBRID');
 
 -- CreateTable
 CREATE TABLE "User" (
-    "id" SERIAL NOT NULL,
+    "id" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "email" TEXT NOT NULL,
-    "password" TEXT NOT NULL,
+    "hash" TEXT NOT NULL,
+    "salt" TEXT NOT NULL,
     "role" "Role" NOT NULL DEFAULT 'APPLICANT',
     "lastLoginAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
@@ -21,15 +22,15 @@ CREATE TABLE "User" (
 
 -- CreateTable
 CREATE TABLE "Application" (
-    "id" SERIAL NOT NULL,
+    "id" TEXT NOT NULL,
     "applicationDate" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "company" TEXT,
     "position" TEXT,
     "location" TEXT,
     "status" "Status" NOT NULL,
-    "workMode" "WorkMode" NOT NULL,
+    "workMode" "WorkMode",
     "linkToJobPosting" TEXT,
-    "userId" INTEGER NOT NULL,
+    "userId" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 

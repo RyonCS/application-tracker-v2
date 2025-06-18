@@ -1,13 +1,17 @@
-import Job from "../models/Job";
-import mongoose from "mongoose";
 import { Request, Response } from 'express';
 
+/**
+ * 
+ */
 interface ApplicationQueryParams {
   sort?: 'dateAsc' | 'dateDesc' | 'locationAsc' | 'locationDesc';
   filter?: 'excludeRejected';
   searchByCompany?: string;
 }
 
+/**
+ * 
+ */
 interface ParsedQueryResults {
   query: Record<string, any>;
   sortOption: Record<string, 1 | -1>;
@@ -16,12 +20,12 @@ interface ParsedQueryResults {
   search?: string;
 }
 
-interface ApplicationQuery {
-  userId: string | mongoose.Types.ObjectId;
-  status?: { $ne: string };
-  company?: { $regex: RegExp };
-}
-
+/**
+ * 
+ * @param queryParams 
+ * @param userId 
+ * @returns 
+ */
 function parseApplicationQueryParams(queryParams: ApplicationQueryParams, userId: string): ParsedQueryResults {
   const sortMap: Record<NonNullable<ApplicationQueryParams['sort']>, Record<string, -1 | 1>>  = {
     dateAsc: { date: 1 },
@@ -51,7 +55,12 @@ function parseApplicationQueryParams(queryParams: ApplicationQueryParams, userId
   
 }
 
-// Get and display all of the user's applications.
+/**
+ * 
+ * @param req 
+ * @param res 
+ * @returns 
+ */
 export const getAllApplications = async (req: Request, res: Response) => {
   // Get the current session ID - userID.
   // @ts-ignore
@@ -74,13 +83,21 @@ export const getAllApplications = async (req: Request, res: Response) => {
   res.render("my-applications", { applications, sort, filter, search });
 };
 
-// Display the new Application Page.
+/**
+ * 
+ * @param req 
+ * @param res 
+ */
 export const newApplicationPage = (req: Request, res: Response) => {
   const date = new Date();
   res.render("add-application", {date});
 };
 
-// Add a new application.
+/**
+ * 
+ * @param req 
+ * @param res 
+ */
 export const addNewApplication = async (req: Request, res: Response) => {
   // Create application and get userId from session.
   // @ts-ignore
@@ -116,7 +133,12 @@ export const addNewApplication = async (req: Request, res: Response) => {
   res.redirect("/applications/my-applications");
 };
 
-// Display edit application page.
+/**
+ * 
+ * @param req 
+ * @param res 
+ * @returns 
+ */
 export const editApplicationPage = async (req: Request, res: Response) => {
   const applicationId = req.params._id;
   // @ts-ignore
@@ -170,7 +192,11 @@ export const editApplication = async (req: Request, res: Response) => {
   }
 };
 
-// Delete a application.
+/**
+ * 
+ * @param req 
+ * @param res 
+ */
 export const deleteApplication = async (req: Request, res: Response) => {
   // Get the id for the application and delete it.
   const { _id } = req.params;
