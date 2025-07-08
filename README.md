@@ -35,13 +35,17 @@ A full-stack web application that helps users track their job applications, buil
 | Styling         | Custom CSS / Bootstrap (opt)  |
 | Hosting         | [Render.com](https://render.com) |
 
-## 🔐 Security Notes
+## Security Notes
 
 - Sessions are stored in PostgreSQL and signed with SESSION_SECRET.
 - Routes are protected via Passport session middleware.
 - Input validation and enum normalization implemented server-side.
 
-  
 
-Copyright © 2025 Ryon Sajnovsky (RyonCS)
-All rights reserved.
+## 🔐 License
+
+This project is licensed for **educational and portfolio use only**.
+
+Commercial use, redistribution, or derivative work is **not permitted** without written consent.
+
+📬 For inquiries, contact: RyonCS.
