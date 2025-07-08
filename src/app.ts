@@ -16,6 +16,7 @@ dotenv.config();
 
 // Create an instance of Express application.
 const app = express();
+app.set('trust proxy', 1);
 
 // Initialize Postgres session store for Express sessions.
 const PgSession = pgSession(session);
