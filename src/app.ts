@@ -8,6 +8,7 @@ import passport from 'passport';
 import express, { Request, Response } from 'express';
 import pg from 'pg';
 import pgSession from 'connect-pg-simple';
+import rateLimit from 'express-rate-limit';
 import { initializePassport } from './middleware/passport-config';
 
 // Load environment variables from .env file.
@@ -37,6 +38,12 @@ app.use(methodOverride('_method'));
 // Serve static files like CSS, JS, and images from 'public' directory.
 app.use(express.static(path.join(__dirname, '..', 'public')));
 
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 5, // limit each IP to 5 requests per windowMs
+  message: 'Too many attempts from this IP, please try again after 15 minutes',
+});
+
 // Set up Postgres connection pool for storing session data.
 const pgPool = new pg.Pool({
   connectionString: process.env.DATABASE_URL, // DB URL from .env.
@@ -60,7 +67,8 @@ const sessionConfig = {
     tableName: 'session', // Table name for storing session information.
   }),
   cookie: {
-    httpOnly: true, // Prevent client-side JS access to cookie for security.
+    httpOnly: true, // Prevent client-side JS access to cookie for security.,
+    secure: false,
     maxAge: 1000 * 60 * 60 * 24 * 7, // Cookie expiration: 1 week.
   },
 };
@@ -83,6 +91,8 @@ app.use(passport.session());
 app.use('/applications', applicationsRoutes);
 
 // Routes related to authentication (login, logout, signup).
+app.use('/auth/login', authLimiter);
+app.use('/auth/register', authLimiter);
 app.use('/auth', authRoutes);
 
 // Define home route: render login page as default landing page.

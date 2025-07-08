@@ -1,7 +1,6 @@
 import express from 'express';
-
-const router = express.Router();
-
+import { ensureAuthenticated } from '../middleware/security-middleware';
+import rateLimit from 'express-rate-limit';
 import {
   getAllApplications,
   newApplicationPage,
@@ -10,6 +9,15 @@ import {
   editApplication,
   deleteApplication,
 } from '../controllers/applications-controller';
+
+const router = express.Router();
+router.use(ensureAuthenticated);
+
+const addApplicationLimiter = rateLimit({
+  windowMs: 60 * 1000, // 1 minute window
+  max: 5, // limit each IP to 5 submissions per minute
+  message: 'Too many job applications submitted, please try again later.',
+});
 
 /**
  * -- Application Routes --
@@ -44,7 +52,7 @@ router.get('/my-applications/:id/edit', editApplicationPage);
  * Handles form submission for adding a new job application.
  * Saves the new application to the database.
  */
-router.post('/my-applications', addNewApplication);
+router.post('/my-applications', addApplicationLimiter, addNewApplication);
 
 /**
  * PUT /applications/my-applications/:id

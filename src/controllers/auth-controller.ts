@@ -31,6 +31,15 @@ export const getRegisterPage = (req: Request, res: Response) => {
  *          or back to the login page on failure or error.
  */
 export const login = async (req: Request, res: Response) => {
+  if (req.isAuthenticated()) {
+    await new Promise((resolve, reject) => {
+      req.logout((err) => {
+        if (err) reject(err);
+        else resolve(null);
+      });
+    });
+  }
+
   try {
     // Authenticate user using Passport's local strategy.
     passport.authenticate('local', (err: Error, authenticatedUser: any) => {
@@ -62,6 +71,15 @@ export const login = async (req: Request, res: Response) => {
  *            or back to the login page if the email is already in use or on error.
  */
 export const register = async (req: Request, res: Response) => {
+  if (req.isAuthenticated()) {
+    await new Promise((resolve, reject) => {
+      req.logout((err) => {
+        if (err) reject(err);
+        else resolve(null);
+      });
+    });
+  }
+
   const { emailAddress, password } = req.body;
   try {
     // Check if a user with the same email already exists.
@@ -79,15 +97,22 @@ export const register = async (req: Request, res: Response) => {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     // Create a new user record in the database.
-    await prisma.user.create({
+    const newUser = await prisma.user.create({
       data: {
         emailAddress,
         passwordHash: hashedPassword,
       },
     });
+    console.log("New User Created. Email: ", emailAddress, "HashedPass: ", hashedPassword);
 
-    // Redirect the new user to their applications dashboard after successful registration.
-    return res.redirect('/applications/my-applications');
+    req.login(newUser, (err) => {
+      if (err) {
+        console.log('Login error after registration:', err);
+        return res.redirect('/auth/login');
+      }
+      return res.redirect('/applications/my-applications');
+    });
+
   } catch (err) {
     console.log('Error', err);
     // Redirect back to login page on error.
@@ -105,18 +130,19 @@ export const register = async (req: Request, res: Response) => {
  */
 export const logOut = (req: Request, res: Response) => {
   // Call Passport's logout to remove user info from the session.
-  req.logout(() => {
-    // Destroy the entire session on the server to fully log out the user.
+  req.logout((err) => {
+    if (err) {
+      console.error("Logout error:", err);
+      return res.status(500).send("Could not log out.");
+    }
+
     req.session.destroy((err) => {
       if (err) {
-        // Log any errors encountered while destroying the session.
-        console.error('Session destruction error', err);
-        // Send HTTP 500 status if logout process fails.
-        return res.status(500).send('Could not log out.');
+        console.error("Session destruction error", err);
+        return res.status(500).send("Could not log out.");
       }
 
-      // Redirect the user to the login page upon successful logout.
-      return res.redirect('/auth/login');
+      res.redirect('/auth/login');
     });
   });
 };
