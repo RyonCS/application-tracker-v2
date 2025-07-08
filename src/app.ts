@@ -68,7 +68,7 @@ const sessionConfig = {
   }),
   cookie: {
     httpOnly: true, // Prevent client-side JS access to cookie for security.,
-    secure: false,
+    secure: true,
     maxAge: 1000 * 60 * 60 * 24 * 7, // Cookie expiration: 1 week.
   },
 };
