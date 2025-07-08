@@ -64,7 +64,12 @@ export const addNewApplication = async (req: Request, res: Response) => {
 
   // Convert the submitted application date string into a Date object,
   // or default to the current date if none was provided.
-  const parsedDate = applicationDate ? new Date(applicationDate) : new Date();
+  let parsedDate = new Date();
+  if (applicationDate) {
+    const now = new Date();
+    const [year, month, day] = applicationDate.split('-').map(Number);
+    parsedDate = new Date(year, month - 1, day, now.getHours(), now.getMinutes(), now.getSeconds(), now.getMilliseconds());
+  }
 
   /**
    * Normalizes enum values like `workMode` and `status` by:
