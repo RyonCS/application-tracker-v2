@@ -19,11 +19,8 @@ const app = express();
 // Initialize Postgres session store for Express sessions.
 const PgSession = pgSession(session);
 
-// Define path to view directory for SSR.
-const viewsPath = path.join(__dirname, 'views');
-
 // Configure Express to use EJS and set the views directory.
-app.set('views', viewsPath);
+app.set('views', path.join(__dirname, '../src/views'));
 app.set('view engine', 'ejs');
 
 // -- Middleware Setup: --
