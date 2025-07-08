@@ -8,7 +8,6 @@ A full-stack web application that helps users track their job applications, buil
 - PostgreSQL
 - EJS (Server-Side Rendering)
 
----
 
 ## Features
 
@@ -20,7 +19,6 @@ A full-stack web application that helps users track their job applications, buil
 - ✅ Session handling with secure cookie storage
 - ✅ Fully written in TypeScript with strong type safety
 
----
 
 ## Technologies Used
 
