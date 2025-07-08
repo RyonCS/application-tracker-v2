@@ -1,205 +1,203 @@
 import { Request, Response } from 'express';
+import { PrismaClient } from '@prisma/client';
+import { parseApplicationQueryParams } from '../utils/queryParser';
+
+const prisma = new PrismaClient();
 
 /**
- * 
- */
-interface ApplicationQueryParams {
-  sort?: 'dateAsc' | 'dateDesc' | 'locationAsc' | 'locationDesc';
-  filter?: 'excludeRejected';
-  searchByCompany?: string;
-}
-
-/**
- * 
- */
-interface ParsedQueryResults {
-  query: Record<string, any>;
-  sortOption: Record<string, 1 | -1>;
-  sort?: string;
-  filter?: string;
-  search?: string;
-}
-
-/**
- * 
- * @param queryParams 
- * @param userId 
- * @returns 
- */
-function parseApplicationQueryParams(queryParams: ApplicationQueryParams, userId: string): ParsedQueryResults {
-  const sortMap: Record<NonNullable<ApplicationQueryParams['sort']>, Record<string, -1 | 1>>  = {
-    dateAsc: { date: 1 },
-    dateDesc: { date: -1 },
-    locationAsc: { location: 1 },
-    locationDesc: { location: -1 },
-  };
-
-  const sort = queryParams.sort ?? 'dateDesc';
-  const filter = queryParams.filter;
-  const search = queryParams.searchByCompany;
-  const sortOption = sortMap[sort] || { date: -1 };
-
-  const userObjectId = new mongoose.Types.ObjectId(userId);
-
-  const query: ApplicationQuery = { userId: userObjectId };
-
-  if (filter === "excludeRejected") {
-    query.status = { $ne: "Rejected" };
-  }
-
-  if (search) {
-    query.company = { $regex: new RegExp(search, "i") };
-  }
-  console.log("Query from parse application", query);
-  return { query, sortOption, sort, filter, search };
-  
-}
-
-/**
- * 
- * @param req 
- * @param res 
- * @returns 
+ * Get's all Job Applications for the logged-in user.
+ * @param req - The HTTP request object.
+ *              It contains information about the client's request,
+ *              including query params, session/user data, headers, etc.
+ * @param res - The HTTP response object.
+ *              It is used to send a response back to the client,
+ *              including rendering views, sending JSON, and redirects.
+ * @returns Renders the "my-application" page with the users job applications,
+ *          or redirects to login if the user is not authenticated.
  */
 export const getAllApplications = async (req: Request, res: Response) => {
-  // Get the current session ID - userID.
-  // @ts-ignore
-  const loggedInUserID = req.session.user_id;
-  console.log("UserId:", loggedInUserID);
-  
-  // If session ID isnt found, redirect to login.
-  if (!loggedInUserID) {
-    return res.redirect("/auth/login");
+  // Get the user's ID from the session.
+  const userId = req.user?.id;
+
+  // If no user is logged in, redirect to login page.
+  if (!userId) {
+    return res.redirect('/auth/login');
   }
 
-  const { query, sortOption, sort, filter, search } = parseApplicationQueryParams(
+  // Parse sorting, filtering, and searching options from the query parameters.
+  const { where, orderBy, sort, filter, search } = parseApplicationQueryParams(
     req.query,
-    loggedInUserID,
+    userId,
   );
-  
 
-  const applications = await Job.find(query).sort(sortOption);
-  console.log("Applications found:", applications.length);
-  res.render("my-applications", { applications, sort, filter, search });
+  // Query the database for all matching job applications belonging to the user.
+  const applications = await prisma.jobApplication.findMany({
+    where,
+    orderBy,
+  });
+
+  // Render the EJS view for displaying the user's applications.
+  res.render('my-applications', { applications, sort, filter, search });
 };
 
 /**
- * 
- * @param req 
- * @param res 
+ * Renders the page to create a new job application.
+ *
  */
 export const newApplicationPage = (req: Request, res: Response) => {
-  const date = new Date();
-  res.render("add-application", {date});
+  // Render the form view for adding a new application.
+  // Pass the current date to pre-fill the application date input.
+  res.render('add-application', { date: new Date() });
 };
 
 /**
- * 
- * @param req 
- * @param res 
+ * Handles the creation of a new job application for a logged-in user.
+ * @param req - Express request object containing form data in req.body and user info in req.user.
+ * @param res - Express response object used to redirect the user after the new application is saved.
  */
 export const addNewApplication = async (req: Request, res: Response) => {
-  // Create application and get userId from session.
-  // @ts-ignore
-  const loggedInUserID = req.session.user_id;
-  const loggedInUserIDObject = new mongoose.Types.ObjectId(loggedInUserID);
+  // Get the logged-in user's ID from the session (populated by Passport).
+  const userId = req.user?.id;
 
-  // Add in time to date for better filtering.
-  if (req.body.date) {
-    const [year, month, day] = req.body.date.split("-");
-    const now = new Date();
+  // Destructure specific fields from the request body.
+  const { applicationDate, workMode, status, ...data } = req.body;
 
-    req.body.date = new Date(
-      parseInt(year),
-      parseInt(month) - 1,
-      parseInt(day),
-      now.getHours(),
-      now.getMinutes(),
-      now.getSeconds(),
-    );
-  } else {
-    req.body.date = new Date();
-  }
+  // Convert the submitted application date string into a Date object,
+  // or default to the current date if none was provided.
+  const parsedDate = applicationDate ? new Date(applicationDate) : new Date();
 
-  // Create a new application.
-  const newApplicationData = {
-    ...req.body,
-    userId: loggedInUserIDObject,
-  };
+  /**
+   * Normalizes enum values like `workMode` and `status` by:
+   * - Converting to uppercase
+   * - Removing dashes and whitespace
+   * Example: "in-office" => "INOFFICE"
+   */
+  const normalizeEnum = (value: string | undefined) =>
+    value?.toUpperCase().replace(/[-\s]/g, '');
 
-  const newApplication = new Job(newApplicationData);
-  await newApplication.save();
+  // Create a new job application record in the database.
+  await prisma.jobApplication.create({
+    data: {
+      ...data, // Include all other form fields (e.g., company, position, location).
+      applicationDate: parsedDate,
+      userId,
+      workMode: normalizeEnum(workMode),
+      status: normalizeEnum(status),
+    },
+  });
 
-  res.redirect("/applications/my-applications");
+  res.redirect('/applications/my-applications');
 };
 
 /**
- * 
- * @param req 
- * @param res 
- * @returns 
+ * Renders the edit page for a specific job application.
  */
 export const editApplicationPage = async (req: Request, res: Response) => {
-  const applicationId = req.params._id;
-  // @ts-ignore
-  const userId = req.session.user_id;
+  // Get the logged-in user's ID from the session.
+  const userId = req.user?.id;
 
-  try {
-    const application = await Job.findById(applicationId);
-    if (!application) {
-      return res.redirect("/applications/my-applications");
-    }
+  // Extract the application ID from the route parameters (e.g., /applications/:id/edit).
+  const applicationId = req.params.id;
 
-    if (!application.userId.equals(userId)) {
-      return res.redirect("/applications/my-applications");
-    }
+  // Query the database for the specific job application.
+  const application = await prisma.jobApplication.findUnique({
+    where: {
+      id: applicationId,
+    },
+  });
 
-    res.render("edit-application", { application });
-  } catch (err) {
-    return res.redirect("/applications/my-applications");
+  // If the application doesn't exist, or doesn't belong to the logged-in user,
+  // redirect to the dashboard to prevent unauthorized access.
+  if (!application || application.userId !== userId) {
+    return res.redirect('/applications/my-applications');
   }
+
+  // If all checks pass, render the edit form with the application data.
+  res.render('edit-application', { application });
 };
 
 /**
- * Handles editing a application by ID.
- * 
- * Check if the application exists and belongs to the logged-in user, then updates it with the request body.
- * Redirect to "/applications/my-applications" in all cases.
- * @param req 
- * @param res 
+ * Handles editing an existing job application by ID.
+ * - Verifies the application exists and belongs to the currently logged-in user.
+ * - Updates the application with values from the request body.
+ * - Redirects to the applications dashboard in all cases (success or unauthorized).
+ *
+ * @param req - Express request object containing the application ID in req.params,
+ *              user session data in req.user, and updated form data in req.body.
+ * @param res - Express response object used to redirect after update or on error.
+ * @returns Redirects to "/applications/my-applications"
  */
 export const editApplication = async (req: Request, res: Response) => {
-  // Get the id for the application and update it.
-  const applicationId = req.params._id;
-  // @ts-ignore
-  const userId = req.session.user_id;
+  // Get current user's ID from session (via Passport)
+  const userId = req.user?.id;
 
-  try {
-    const application = await Application.findById(applicationId);
-    if (!application) {
-      res.redirect("/applications/my-applications");
-    }
-    console.log("Application from DB:", application);
-    if (!application.userId.equals(userId)) {
-      res.redirect("/applications/my-applications");
-    }
-    await Application.findByIdAndUpdate(applicationId, req.body, { runValidators: true });
+  // Get application ID from route parameters.
+  const { id } = req.params;
 
-    res.redirect("/applications/my-applications");
-  } catch (err) {
-    console.error(err);
-    res.redirect("/applications/my-applications");
+  // Look up the existing application by its ID.
+  const application = await prisma.jobApplication.findUnique({ where: { id } });
+
+  // Extract fields from the request body.
+  const { applicationDate, workMode, status } = req.body;
+
+  // Parse and normalize date.
+  const parsedDate = applicationDate ? new Date(applicationDate) : new Date();
+
+  /**
+   * Utility to normalize enums (workMode, status)
+   * Converts strings to uppercase and strips whitespace or dashes.
+   * Example: "in-office" → "INOFFICE"
+   */
+  const normalizeEnum = (value: string | undefined) =>
+    value?.toUpperCase().replace(/[-\s]/g, '');
+
+  // If the application does not exist or does not belong to the current user,
+  // prevent unauthorized access by redirecting back to the dashboard.
+  if (!application || application.userId !== userId) {
+    return res.redirect('/applications/my-applications');
   }
+
+  // Update the application with the new data.
+  await prisma.jobApplication.update({
+    where: { id },
+    data: {
+      ...req.body,
+      applicationDate: parsedDate,
+      workMode: normalizeEnum(workMode),
+      status: normalizeEnum(status),
+    },
+  });
+
+  // Redirect back to the user's applications dashboard after update.
+  res.redirect('/applications/my-applications');
 };
 
 /**
- * 
- * @param req 
- * @param res 
+ * Deletes a specific job application by its ID.
+ *
+ * @param req - Express request object containing the application ID in the route parameters
+ * @param res - Express response object used to redirect the user after deletion
+ * @returns Redirects the user to the applications dashboard after deletion
  */
 export const deleteApplication = async (req: Request, res: Response) => {
-  // Get the id for the application and delete it.
-  const { _id } = req.params;
-  await Application.findByIdAndDelete(_id);
-  res.redirect("/applications/my-applications");
+  // Extract the application ID from the route parameters.
+  const { id } = req.params;
+
+  const userId = req.user?.id;
+
+  // Look up the application in the database.
+  const application = await prisma.jobApplication.findUnique({
+    where: { id },
+  });
+
+  // If application doesn't exist or doesn't belong to the logged-in user, deny access.
+  if (!application || application.userId !== userId) {
+    return res.redirect('/applications/my-applications');
+  }
+
+  // If everything checks out, delete the application.
+  await prisma.jobApplication.delete({ where: { id } });
+
+  // Redirect to the dashboard after deletion.
+  res.redirect('/applications/my-applications');
 };

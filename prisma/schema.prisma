@@ -9,51 +9,49 @@ datasource db {
 }
 
 model User {
-    id           String    @id @default(uuid())
-    createdAt    DateTime  @default(now())
-    email        String    @unique
-    passwordHash String
-    hash         String  
-    salt         String  
-    role         Role      @default(APPLICANT)
-    lastLoginAt  DateTime  @default(now())
+  id           String        @id @default(uuid())
+  createdAt    DateTime      @default(now())
+  emailAddress        String        @unique
+  passwordHash String
+  role         Role          @default(APPLICANT)
+  lastLoginAt  DateTime      @default(now())
 
-    applications Application[]
+  jobApplications JobApplication[]
 }
 
-model Application {
-    id                  String    @id @default(uuid())
-    applicationDate     DateTime  @default(now())
-    company             String?
-    position            String?
-    location            String?
-    status              Status
-    workMode            WorkMode?  
-    linkToJobPosting    String?
-    userId              String
-    user                User      @relation(fields: [userId], references: [id])
-    createdAt           DateTime  @default(now())
-    updatedAt           DateTime  @updatedAt
+model JobApplication {
+  id               String    @id @default(uuid())
+  applicationDate  DateTime  @default(now())
+  company          String?
+  position         String?
+  location         String?
+  status           Status
+  workMode         WorkMode?
+  linkToJobPosting String?
+  userId           String
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+  user             User      @relation(fields: [userId], references: [id])
 }
 
 enum Role {
-    APPLICANT
-    EMPLOYER
-    ADMIN
+  APPLICANT
+  EMPLOYER
+  ADMIN
 }
 
 enum Status {
-    APPLIED
-    PHONESCREEN
-    INTERVIEW
-    TAKEHOMEASSESSMENT
-    OFFER
-    REJECTED
-    DECLINED
+  APPLIED
+  PHONESCREEN
+  INTERVIEW
+  TAKEHOMEASSESSMENT
+  OFFER
+  REJECTED
+  DECLINED
 }
 
 enum WorkMode {
-    INPERSON
-    REMOTE
-    HYBRID
+  INPERSON
+  REMOTE
+  HYBRID
 }

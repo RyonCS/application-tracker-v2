@@ -6,7 +6,7 @@
     <link rel="stylesheet" href="/styles/my-applications.css">
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
-    <title>My Application Applications</title>
+    <title>My Job Applications</title>
 
 </head>
 <body>
@@ -16,7 +16,7 @@
       <div class="d-flex align-items-center justify-content-between">
         
         <!-- Title -->
-        <h3 class="text-white m-0 flex-grow-1 text-center">Application Application Tracker</h3>
+        <h3 class="text-white m-0 flex-grow-1 text-center">Job Application Tracker</h3>
 
         <!-- Log Out Button -->
         <form action="/auth/logout" method="post" class="ms-3">
@@ -111,7 +111,7 @@
       <tbody>
         <% for (application of applications) { %>
           <tr>
-            <td><%= new Date(application.date).toLocaleDateString('en-US', { 
+            <td><%= new Date(application.applicationDate).toLocaleDateString('en-US', { 
               month: 'short', 
               day: '2-digit', 
               year: 'numeric' }) %></td>
@@ -119,15 +119,29 @@
             <td><%= application.position %></td>
             <td><%= application.location %></td>
             <td><%= application.workMode %></td>
-            <td class="<%= application.status === 'Rejected' ? 'rejected-status' : '' %>"><%= application.status %></td>
-            <% let link = application.linkToPosting.startsWith('http') ? application.linkToPosting : 'https://' + application.linkToPosting; %>
-            <td><a href="<%= link%>" target="_blank" rel="noopener noreferrer">Posting</a></td>
+            <td class="<%= application.status === 'REJECTED' ? 'rejected-status' : '' %>"><%= application.status %></td>
+            <%
+            let link = '#';
+            if (application.linkToJobPosting && typeof application.linkToJobPosting === 'string') {
+              const trimmedLink = application.linkToJobPosting.trim();
+              if (trimmedLink.length > 0) {
+                link = trimmedLink.startsWith('http') ? trimmedLink : 'https://' + trimmedLink;
+              }
+            }
+          %>
+          <td>
+            <% if (link !== '#') { %>
+              <a href="<%= link %>" target="_blank" rel="noopener noreferrer">Posting</a>
+            <% } else { %>
+              N/A
+            <% } %>
+          </td>
             <td>
               <div id="actionsColumn">
-                <a href="/applications/my-applications/<%= application._id %>/edit">
+                <a href="/applications/my-applications/<%= application.id %>/edit">
                   <button type="button" id="editButton">Edit</button>
                 </a>
-                <form action="/applications/my-applications/<%= application._id %>?_method=DELETE" method="POST">
+                <form action="/applications/my-applications/<%= application.id %>?_method=DELETE" method="POST">
                   <input type="hidden" name="userId" value="<%= application.userId %>">
                   <button type="submit" id="deleteButton">Delete</button>
                 </form>

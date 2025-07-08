@@ -1,23 +1,32 @@
 # Node modules
 node_modules/
 
-# Environment variables and secrets
+# Environment variables
 .env
-SetUp/CreateSecretKey.js
 
 # Build output
 dist/
 
-# Prisma local files
+# Prisma generated client
+prisma/dev.db
+prisma/dev.db-journal
+prisma/*.sqlite
+prisma/migrations/
 *.db
 *.sqlite
 
 # Logs
 npm-debug.log*
-yarn-debug.log*
 pnpm-debug.log*
 
 # IDE and OS junk
 .DS_Store
 .vscode/
 .idea/
+
+# Prettier and ESLint cache (optional)
+.prettiercache
+.eslintcache
+
+# TypeScript
+*.tsbuildinfo
