@@ -1,104 +1,89 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/styles/editandAddApplication.css">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
-    <title>Edit an Application!</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="/styles/editandAddApplication.css" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <title>Edit an Application!</title>
 </head>
 <body>
   <!-- Header -->
-  <header class="p-3 text-bg-dark position-relative">
+  <header class="p-3 text-bg-dark">
     <div class="container-fluid">
-        <div class="d-flex align-items-center justify-content-between">
-        
-        <!-- Invisible placeholder to balance the logout button -->
-        <div style="width: 120px;"></div>
+      <div class="d-flex align-items-center justify-content-between">
+        <!-- Back to Jobs Button -->
+        <form action="/applications/my-applications" method="get" class="m-0">
+          <button class="btn btn-outline-light">Back to Jobs</button>
+        </form>
 
         <!-- Centered Title -->
-        <h3 class="text-white m-0 position-absolute top-50 start-50 translate-middle">
-            Job Application Tracker
-        </h3>
+        <h3 class="text-white m-0 text-center flex-grow-1">Job Application Tracker</h3>
 
         <!-- Log Out Button -->
-        <form action="/auth/logout" method="post">
-            <button class="btn btn-outline-light">Log Out</button>
+        <form action="/auth/logout" method="post" class="m-0">
+          <button class="btn btn-outline-light">Log Out</button>
         </form>
-        </div>
+      </div>
     </div>
-    </header>
+  </header>
 
-  <form action="/applications/my-applications/<%=application.id%>?_method=PUT" method="POST" style="margin-top: 80px;">
+  <form action="/applications/my-applications/<%=application.id%>?_method=PUT" method="POST" class="mt-4">
     <table id="editApplicationsTable">
-        <!-- Semantically incorrect for not having headers in <thead> but quickest workaround to make button take up two rows.-->
-        <tbody>
-            <tr>
-                <th>
-                    Date
-                </th>
-                <th>
-                    Company
-                </th>
-                <th>
-                    Position
-                </th>
-                <th>
-                    Location
-                </th>
-                <th>
-                    Work Mode
-                </th>
-                <th>
-                    Status
-                </th>
-                <th>
-                    Link to Application
-                </th>
-                <th rowspan="2">
-                    <button class="form-check-label" style="border: 2px solid #555; border-radius: 5px; padding: 5px; background-color: #f8f9fa;">Submit</button>
-                </th>
-            </tr>
-            <tr>
-                <td>
-                    <% const formattedDate = application.applicationDate ? application.applicationDate.toISOString().split('T')[0] : '' %>
-                    <input type="date" name="applicationDate" placeholder="<%=formattedDate %>" value="<%=formattedDate %>" style="padding: 3px;">
-                </td>
-                <td>
-                     <input type="text" name="company" placeholder="<%=application.company %>" value="<%=application.company %>" style="padding: 3px;">
-                </td>
-                <td>
-                    <input type="text" name="position" placeholder="<%=application.position %>" value="<%=application.position %>" style="padding: 3px;">
-                </td>
-                <td>
-                     <input type="text" name="location" placeholder="<%=application.location %>" value="<%=application.location %>" style="padding: 3px;">
-                </td>
-                <td>
-                     <select name="workMode" style="padding: 6px 8px 6px 6px;">
-                        <option value="In-Person" <%=application.workMode === 'In-Person' ? 'selected' : "" %>>In-Person</option>
-                        <option value="Remote" <%=application.workMode === 'Remote' ? 'selected' : "" %>>Remote</option>
-                        <option value="Hybrid" <%=application.workMode === 'Hybrid' ? 'selected' : "" %>>Hybrid</option>
-
-                    </select>
-                </td>
-                <td>
-                     <select name="status" style="padding: 6px 8px 6px 6px;">
-                        <option value="Applied" <%=application.status === 'Applied' ? 'selected' : "" %>>Applied</option>
-                        <option value="Interview" <%=application.status === 'Interview' ? 'selected' : "" %>>Interview</option>
-                        <option value="Offer" <%=application.status === 'Offer' ? 'selected' : "" %>>Offer</option>
-                        <option value="Rejected" <%=application.status === 'Rejected' ? 'selected' : "" %>>Rejected</option>
-                    </select>
-                </td>
-                <td>
-                    <input type="text" name="linkToJobPosting" id="linkToPosting" placeholder="Insert link..." value="<%=application.linkToPosting %>" style="padding: 3px;">
-                </td>
-            </tr>
-        </tbody>
+      <thead style="background-color:#C8C8C8 !important;"">
+        <tr>
+          <th>Date</th>
+          <th>Company</th>
+          <th>Position</th>
+          <th>Location</th>
+          <th>Work Mode</th>
+          <th>Status</th>
+          <th>Link to Application</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="text-center">
+            <% const formattedDate = application.applicationDate ? application.applicationDate.toISOString().split('T')[0] : '' %>
+            <input type="date" name="applicationDate" value="<%=formattedDate %>" class="form-control mx-auto" />
+          </td>
+          <td class="text-center">
+            <input type="text" name="company" value="<%=application.company %>" placeholder="Company" class="form-control mx-auto" />
+          </td>
+          <td class="text-center">
+            <input type="text" name="position" value="<%=application.position %>" placeholder="Position" class="form-control mx-auto" />
+          </td>
+          <td class="text-center">
+            <input type="text" name="location" value="<%=application.location %>" placeholder="Location" class="form-control mx-auto" />
+          </td>
+          <td class="text-center">
+            <select name="workMode" class=" mx-auto">
+              <option value="In-Person" <%=application.workMode === 'In-Person' ? 'selected' : "" %>>In-Person</option>
+              <option value="Remote" <%=application.workMode === 'Remote' ? 'selected' : "" %>>Remote</option>
+              <option value="Hybrid" <%=application.workMode === 'Hybrid' ? 'selected' : "" %>>Hybrid</option>
+            </select>
+          </td>
+          <td class="text-center">
+            <select name="status" class=" mx-auto">
+              <option value="Applied" <%=application.status === 'Applied' ? 'selected' : "" %>>Applied</option>
+              <option value="Interview" <%=application.status === 'Interview' ? 'selected' : "" %>>Interview</option>
+              <option value="Offer" <%=application.status === 'Offer' ? 'selected' : "" %>>Offer</option>
+              <option value="Rejected" <%=application.status === 'Rejected' ? 'selected' : "" %>>Rejected</option>
+            </select>
+          </td>
+          <td class="text-center">
+            <input type="text" name="linkToJobPosting" value="<%=application.linkToJobPosting %>" placeholder="Link" class="form-control mx-auto" />
+          </td>
+          <td class="text-center">
+            <button type="submit" class="btn btn-primary btn-sm rounded-pill px-3" style="font-size: 0.85rem;">Submit</button>
+          </td>
+        </tr>
+      </tbody>
     </table>
   </form>
 
-    <!-- 100% privacy-first analytics -->
-    <script async src="https://scripts.simpleanalyticscdn.com/latest.js"></script>
-
+  <!-- 100% privacy-first analytics -->
+  <script async src="https://scripts.simpleanalyticscdn.com/latest.js"></script>
 </body>
 </html>

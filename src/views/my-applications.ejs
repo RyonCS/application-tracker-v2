@@ -14,8 +14,6 @@
   <header class="p-3 text-bg-dark position-relative">
     <div class="container-fluid">
       <div class="d-flex align-items-center justify-content-between">
-        
-        <!-- Invisible placeholder to balance the logout button -->
         <div style="width: 120px;"></div>
 
         <!-- Centered Title -->
@@ -99,11 +97,7 @@
   <table id="mainApplicationsTable">
       <thead style="background-color:#C8C8C8;">
         <tr>
-          <th>
-            <a href="?sort=<%= sort === 'dateAsc' ? 'dateDesc' : 'dateAsc' %>" class="flex-grow-1 text-center text-decoration-none text-dark">
-              Date
-            </a>
-          </th>
+          <th>Date</th>
           <th>Company</th>
           <th>Position</th>
           <th>Location</th>
@@ -113,6 +107,7 @@
           <th>Actions</th>
         </tr>
       </thead>
+
       <tbody>
         <% for (application of applications) { %>
           <tr>
@@ -142,13 +137,14 @@
             <% } %>
           </td>
             <td>
-              <div id="actionsColumn">
-                <a href="/applications/my-applications/<%= application.id %>/edit">
-                  <button type="button" id="editButton">Edit</button>
-                </a>
-                <form action="/applications/my-applications/<%= application.id %>?_method=DELETE" method="POST">
+              <div id="actionsColumn" class="d-flex align-items-center gap-2">
+                <form action="/applications/my-applications/<%= application.id %>/edit" method="get" class="m-0 p-0">
+                  <button type="submit" class="btn btn-secondary btn-sm rounded-pill px-3" style="font-size: 0.85rem;">Edit</button>
+                </form>
+
+                <form action="/applications/my-applications/<%= application.id %>?_method=DELETE" method="POST" class="m-0 p-0">
                   <input type="hidden" name="userId" value="<%= application.userId %>">
-                  <button type="submit" id="deleteButton">Delete</button>
+                  <button type="submit" class="btn btn-danger btn-sm rounded-pill px-3" style="font-size: 0.85rem;">Delete</button>
                 </form>
               </div>
             </td>

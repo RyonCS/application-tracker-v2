@@ -9,92 +9,75 @@
 </head>
 <body>
   <!-- Header -->
-  <header class="p-3 text-bg-dark position-relative">
+  <header class="p-3 text-bg-dark">
     <div class="container-fluid">
         <div class="d-flex align-items-center justify-content-between">
         
-        <!-- Invisible placeholder to balance the logout button -->
-        <div style="width: 120px;"></div>
+            <!-- Back to Jobs Button -->
+            <form action="/applications/my-applications" method="get" class="m-0">
+                <button class="btn btn-outline-light">Back to Jobs</button>
+            </form>
 
-        <!-- Centered Title -->
-        <h3 class="text-white m-0 position-absolute top-50 start-50 translate-middle">
-            Job Application Tracker
-        </h3>
+            <!-- Centered Title -->
+            <h3 class="text-white m-0 text-center flex-grow-1">Job Application Tracker</h3>
 
-        <!-- Log Out Button -->
-        <form action="/auth/logout" method="post">
-            <button class="btn btn-outline-light">Log Out</button>
-        </form>
+            <!-- Log Out Button -->
+            <form action="/auth/logout" method="post" class="m-0">
+                <button class="btn btn-outline-light">Log Out</button>
+            </form>
+
+            </div>
         </div>
-    </div>
     </header>
 
     <form action="/applications/my-applications" method="POST">
-        <table id="editApplicationsTable">
-        <!-- Semantically incorrect for not having headers in <thead> but quickest workaround to make button take up two rows.-->
+    <table id="editApplicationsTable">
+        <thead style="background-color:#C8C8C8 !important;">
+            <tr>
+                <th>Date</th>
+                <th>Company</th>
+                <th>Position</th>
+                <th>Location</th>
+                <th>Work Mode</th>
+                <th>Status</th>
+                <th>Link to Application</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        
         <tbody>
-            <tr>
-                <th>
-                    Date
-                </th>
-                <th>
-                    Company
-                </th>
-                <th>
-                    Position
-                </th>
-                <th>
-                    Location
-                </th>
-                <th>
-                    Work Mode
-                </th>
-                <th>
-                    Status
-                </th>
-                <th>
-                    Link to Application
-                </th>
-                <td rowspan="2">
-                    <button class="form-check-label" style="border: 2px solid #555; border-radius: 5px; padding: 5px; background-color: #f8f9fa;">Submit</button>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <% const formattedDate = date ? date.toISOString().split('T')[0] : '' %>
-                    <input type="date" name="applicationDate" placeholder="<%=formattedDate %>" value="<%=formattedDate %>" style="padding: 3px;">
-                </td>
-                <td>
-                     <input type="text" name="company" placeholder="Company">
-                </td>
-                <td>
-                    <input type="text" name="position" placeholder="Position">
-                </td>
-                <td>
-                     <input type="text" name="location" placeholder="Location">
-                </td>
-                <td>
-                     <select name="workMode">
-                        <option value="In-Person">In-Person</option>
-                        <option value="Remote">Remote</option>
-                        <option value="Hybrid">Hybrid</option>
-                    </select>
-                </td>
-                <td>
-                     <select name="status">
-                        <option value="Applied">Applied</option>
-                        <option value="Interview">Interview</option>
-                        <option value="Offer">Offer</option>
-                        <option value="Rejected">Rejected</option>
-                    </select>
-                </td>
-                <td>
-                    <input type="text" name="linkToJobPosting" placeholder="Link">
-                </td>
-            </tr>
+        <tr>
+            <td>
+            <% const formattedDate = date ? date.toISOString().split('T')[0] : '' %>
+            <input type="date" name="applicationDate" value="<%=formattedDate %>" class="form-control mx-auto"/>
+            </td>
+            <td><input type="text" name="company" placeholder="Company" class="form-control mx-auto"/></td>
+            <td><input type="text" name="position" placeholder="Position" class="form-control mx-auto"/></td>
+            <td><input type="text" name="location" placeholder="Location" class="form-control mx-auto"/></td>
+            <td>
+            <select name="workMode">
+                <option value="In-Person">In-Person</option>
+                <option value="Remote">Remote</option>
+                <option value="Hybrid">Hybrid</option>
+            </select>
+            </td>
+            <td>
+            <select name="status">
+                <option value="Applied">Applied</option>
+                <option value="Interview">Interview</option>
+                <option value="Offer">Offer</option>
+                <option value="Rejected">Rejected</option>
+            </select>
+            </td>
+            <td><input type="text" name="linkToJobPosting" placeholder="Link" class="form-control mx-auto"/></td>
+            <td class="text-center">
+                <button type="submit" class="btn btn-primary btn-sm rounded-pill px-3" style="font-size: 0.85rem;">Submit</button>
+            </td>
+        </tr>
         </tbody>
     </table>
 
+    
     </form>
 
     <!-- 100% privacy-first analytics -->
