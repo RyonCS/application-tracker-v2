@@ -8,24 +8,26 @@
     <title>Edit an Application!</title>
 </head>
 <body>
-      <!-- Header -->
-  <header class="p-3 text-bg-dark">
+  <!-- Header -->
+  <header class="p-3 text-bg-dark position-relative">
     <div class="container-fluid">
         <div class="d-flex align-items-center justify-content-between">
+        
+        <!-- Invisible placeholder to balance the logout button -->
+        <div style="width: 120px;"></div>
 
-            <!-- Back to My Applications -->
-            <a href="/applications/my-applications" class="btn btn-outline-light me-3">Back to My Applications</a>
+        <!-- Centered Title -->
+        <h3 class="text-white m-0 position-absolute top-50 start-50 translate-middle">
+            Job Application Tracker
+        </h3>
 
-            <!-- Title centered -->
-            <h3 class="text-white m-0 mx-auto">Job Application Tracker</h3>
-
-            <!-- Logout Button -->
-            <form action="/auth/logout" method="post" class="ms-3">
-                <button class="btn btn-outline-light">Log Out</button>
-            </form>
+        <!-- Log Out Button -->
+        <form action="/auth/logout" method="post">
+            <button class="btn btn-outline-light">Log Out</button>
+        </form>
         </div>
     </div>
-</header>
+    </header>
 
   <form action="/applications/my-applications/<%=application.id%>?_method=PUT" method="POST" style="margin-top: 80px;">
     <table id="editApplicationsTable">

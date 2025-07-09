@@ -11,19 +11,24 @@
 </head>
 <body>
   <!-- Header -->
-  <header class="p-3 text-bg-dark"> 
-    <div class="container-fluid"> 
+  <header class="p-3 text-bg-dark position-relative">
+    <div class="container-fluid">
       <div class="d-flex align-items-center justify-content-between">
         
-        <!-- Title -->
-        <h3 class="text-white m-0 flex-grow-1 text-center">Job Application Tracker</h3>
+        <!-- Invisible placeholder to balance the logout button -->
+        <div style="width: 120px;"></div>
+
+        <!-- Centered Title -->
+        <h3 class="text-white m-0 position-absolute top-50 start-50 translate-middle">
+          Job Application Tracker
+        </h3>
 
         <!-- Log Out Button -->
-        <form action="/auth/logout" method="post" class="ms-3">
+        <form action="/auth/logout" method="post">
           <button class="btn btn-outline-light">Log Out</button>
         </form>
-      </div> 
-    </div> 
+      </div>
+    </div>
   </header>
 
     
